@@ -17,13 +17,13 @@ bot.command("onetime", (ctx) =>
   )
 );
 
-bot.command("custom", async (ctx) => {
+bot.command("start", async (ctx) => {
   return await ctx.reply(
-    "Custom buttons keyboard",
+    `Welcome ${ctx.message.chat.first_name} 🎬 🎥 we're happy you're here 🤡 🎉`,
     Markup.keyboard([
-      ["🔍 Search", "😎 Popular"], // Row1 with 2 buttons
+      ["🔍 Search", "😎 Today Schedule"], // Row1 with 2 buttons
       ["☸ Setting", "📞 Feedback"], // Row2 with 2 buttons
-      ["📢 Ads", "⭐️ Rate us", "👥 Share"], // Row3 with 3 buttons
+      ["📢 View Cinema", " Get location"], // Row3 with 3 buttons
     ])
       .oneTime()
       .resize()
@@ -32,13 +32,7 @@ bot.command("custom", async (ctx) => {
 
 bot.hears("🔍 Search", (ctx) => ctx.reply("Yay!"));
 bot.hears("📢 Ads", (ctx) => ctx.reply("Free hugs. Call now!"));
-bot.hears("😎 Popular", async (ctx) => {
-  // const movies = await fetchMovies();
-  // for (const movie of movies.d) {
-  //   console.log(movie);
-  //   ctx.reply(movies)
-
-  // }
+bot.hears("😎 Today Schedule", async (ctx) => {
   const movies = await prepMedia();
   for (let movie of movies) {
     ctx.replyWithPhoto(movie.img, {
@@ -46,41 +40,74 @@ bot.hears("😎 Popular", async (ctx) => {
       parse_mode: "Html",
       ...Markup.inlineKeyboard([Markup.button.callback("Book", "book")]),
     });
-    // bot.telegram.sendMessage(
-    //   ctx.chat.id,
-    //   createMessageText(movie),
-    //   requestPhoneKeyboard, { parse_mode: 'HTML' }
-    //     ctx.replyWithHTML(
-    //       `
-    // <strong>${movie.title}</strong>
-    // <em>${movie.type}</em>
-    // <strong>${movie.rank}</strong>`,
-    //       requestPhoneKeyboard
-    //     );
-    // );
   }
-  // ctx.replyWithMediaGroup(movies);
 });
+
+bot.action("book", (ctx) => {
+  return ctx.reply(
+    "Please Select Date 😊",
+    Markup.inlineKeyboard([
+      Markup.button.callback("Sat sep 28", "sat sep 28"),
+      Markup.button.callback("Sun sep 29", "sun sep 29"),
+    ])
+  );
+});
+
+bot.action("sat sep 28", (ctx) => {
+  return ctx.reply(
+    "Please Select Cinema 😊",
+    Markup.inlineKeyboard([
+      Markup.button.callback("🎬  Cinema1 2D", "cinema1 2d"),
+      Markup.button.callback("🎬  Cinema2 3D", "cinema2 3d"),
+    ])
+  );
+});
+
+bot.action("cinema1 2d", ctx =>{
+  ctx.reply(
+    "Please take a sit 🪑",
+    Markup.inlineKeyboard([
+      generateSit(),
+      generateSit(),
+      generateSit()
+    ])
+  )
+})
+
+bot.action("1", ctx => {
+  return ctx.reply(
+    "Confirm order",
+    Markup.inlineKeyboard([
+      Markup.button.callback("Confirm", "confirm"),
+      Markup.button.callback("Cancel", "cancel")
+    ])
+  )
+})
+
+bot.action("confirm", ctx => {
+  return ctx.reply("Thank your for choosing us, your sit is reserved for your you'll be asked to make payment on your way in")
+})
+const generateSit = () =>{
+  let sits = []
+  for (let i=1; i<=8; i++){
+    sits.push(Markup.button.callback(i, i));
+  }
+  return sits
+}
 
 const createMessageText = (movie) => {
   return `
   <strong>${movie.title}</strong>
   <em>${movie.type}</em>
+  <strong>${movie.actions}</strong>
   <strong>${movie.rank}</strong>`;
 };
 
 const prepMedia = async () => {
   const movies = await fetchMovies();
-  // console.log(movies.d);
 
   let data = [];
   for (let movie of movies.d) {
-    console.log(movie);
-    // let d = {
-    //   media: movie.i.imageUrl,
-    //   caption: movie.l,
-    //   type: "photo",
-    // };
     let d = {
       img: movie.i.imageUrl,
       title: movie.l,
