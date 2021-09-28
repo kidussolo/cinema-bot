@@ -1,0 +1,18 @@
+{
+  "name": "cinema-bot",
+  "version": "1.0.0",
+  "description": "Cinema ticket booking bot",
+  "main": "app.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "author": "Kidus Solomon",
+  "license": "MIT",
+  "dependencies": {
+    "axios": "^0.21.4",
+    "dotenv": "^10.0.0",
+    "express": "^4.17.1",
+    "node-fetch": "^1.7.3",
+    "telegraf": "^4.4.1"
+  }
+}
