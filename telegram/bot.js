@@ -21,7 +21,7 @@ bot.command("start", async (ctx) => {
   return await ctx.reply(
     `Welcome ${ctx.message.chat.first_name} 🎬 🎥 we're happy you're here 🤡 🎉`,
     Markup.keyboard([
-      ["🔍 Search", "😎 Today Schedule"], // Row1 with 2 buttons
+      ["🔍 Search", "😎 Movies"], // Row1 with 2 buttons
       ["☸ Setting", "📞 Feedback"], // Row2 with 2 buttons
       ["📢 View Cinema", " Get location"], // Row3 with 3 buttons
     ])
@@ -32,7 +32,7 @@ bot.command("start", async (ctx) => {
 
 bot.hears("🔍 Search", (ctx) => ctx.reply("Yay!"));
 bot.hears("📢 Ads", (ctx) => ctx.reply("Free hugs. Call now!"));
-bot.hears("😎 Today Schedule", async (ctx) => {
+bot.hears("😎 Movies", async (ctx) => {
   const movies = await prepMedia();
   for (let movie of movies) {
     ctx.replyWithPhoto(movie.img, {
@@ -46,54 +46,63 @@ bot.hears("😎 Today Schedule", async (ctx) => {
 bot.action("book", (ctx) => {
   return ctx.reply(
     "Please Select Date 😊",
-    Markup.inlineKeyboard([
-      Markup.button.callback("Sat sep 28", "sat sep 28"),
-      Markup.button.callback("Sun sep 29", "sun sep 29"),
+    Markup.keyboard([
+      Markup.button.callback("Sat sep 28"),
+      Markup.button.callback("Sun sep 29"),
+      Markup.button.callback("Main menu"),
     ])
+      .oneTime()
+      .resize()
   );
 });
 
-bot.action("sat sep 28", (ctx) => {
+bot.hears("Sat sep 28", (ctx) => {
   return ctx.reply(
     "Please Select Cinema 😊",
-    Markup.inlineKeyboard([
-      Markup.button.callback("🎬  Cinema1 2D", "cinema1 2d"),
-      Markup.button.callback("🎬  Cinema2 3D", "cinema2 3d"),
+    Markup.keyboard([
+      Markup.button.callback("🎬  Cinema1 2D"),
+      Markup.button.callback("🎬  Cinema2 3D"),
+      Markup.button.callback("Main menu"),
     ])
+      .oneTime()
+      .resize()
   );
 });
 
-bot.action("cinema1 2d", ctx =>{
+bot.hears("🎬  Cinema1 2D", (ctx) => {
   ctx.reply(
     "Please take a sit 🪑",
-    Markup.inlineKeyboard([
-      generateSit(),
-      generateSit(),
-      generateSit()
-    ])
-  )
-})
+    Markup.keyboard([generateSit(), generateSit(), generateSit()])
+      .oneTime()
+      .resize()
+  );
+});
 
-bot.action("1", ctx => {
+bot.hears("1", (ctx) => {
   return ctx.reply(
     "Confirm order",
-    Markup.inlineKeyboard([
+    Markup.keyboard([
       Markup.button.callback("Confirm", "confirm"),
-      Markup.button.callback("Cancel", "cancel")
+      Markup.button.callback("Cancel", "cancel"),
+      Markup.button.callback("Main menu"),
     ])
-  )
-})
+      .oneTime()
+      .resize()
+  );
+});
 
-bot.action("confirm", ctx => {
-  return ctx.reply("Thank your for choosing us, your sit is reserved for your you'll be asked to make payment on your way in")
-})
-const generateSit = () =>{
-  let sits = []
-  for (let i=1; i<=8; i++){
+bot.hears("Confirm", (ctx) => {
+  return ctx.reply(
+    "Thank your for choosing us, your sit is reserved for your you'll be asked to make payment on your way in"
+  );
+});
+const generateSit = () => {
+  let sits = [];
+  for (let i = 1; i <= 8; i++) {
     sits.push(Markup.button.callback(i, i));
   }
-  return sits
-}
+  return sits;
+};
 
 const createMessageText = (movie) => {
   return `
